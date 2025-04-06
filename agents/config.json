@@ -1,0 +1,18 @@
+{
+  "peleng": {
+    "mean": "0",
+    "std": "1"
+  },
+  "distance": {
+    "mean": "0",
+    "std": "20"
+  },
+  "run": {
+    "delay": "50",
+    "amount": "50"
+  },
+  "screen": {
+    "scale": "10"
+  },
+  "seed": "random1"
+}

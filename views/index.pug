@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h3= title
+  div(style="display:flex")
+    canvas(id="sea",style="width:800px;height:800px;border:solid black;float:left")
+    div(style="padding-left:20px")
+      button(id="init",onclick="init()")= "Init"
+      button(id="next",onclick="next()",disabled="true")= "Next"
+      button(id="run",onclick="run()",disabled="true")= "Run"
+      button(id="json",onclick="json()",disabled="true")= "Show json"
+      button(id="config",onclick="config()",disabled="true")= "Show config"
+      button(id="history",onclick="history()",disabled="true")= "Show history"
+      div(id="response",style="padding-top:20px")
+      script(src="javascripts/manager.js")
