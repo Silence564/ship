@@ -1,15 +1,15 @@
 let debug = require('debug')('ship-simulator:ship1');
 module.exports = {
     "init": {
-        "x": 1000, // м
-        "y": 1000, // м
+        "x": -1000, // м
+        "y": -1000, // м
         "angle": 180, // градусов относительно оси y
         "v": 10, // метров в секунду
         "length": 250, // длина в метрах
         "color": "red",
         "frequency": 1
     },
-    "update": function (store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {
+    "update": function (active, store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {
         // [dx, dy] = utils.linearIncrement(store.angle, store.v); // Пересчитали в приращение
         // store.x += dx; // Применили приращение
         // store.y += dy;

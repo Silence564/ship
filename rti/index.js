@@ -1,6 +1,7 @@
 const utils = require('./utils');
 const decision = require('./decision');
 const maneuvering = require('./maneuvering');
+const active = require('./active');
 const fs = require('fs');
 const folder = "./agents/";
 
@@ -65,20 +66,30 @@ const rti = {
         }
         for (let i = 0; i < this.agents.length; i++) {
             let agent = this.agents[i];
-            console.log(agent);
-            /*for(let j = 0; j< agent.observed.length; j++){
-                console.log(agent.observed[j]);
-                if (agent.observed[j].Maneuver == true){
-                    console.log("SOSSOSOS");
+            //console.log(agent.store);
+            if (!agent.store.angleTemp){
+                agent.store.angleTemp = agent.store.angle;  
+                agent.store.angleFlag = 0;
+            }
+            for(let j =0; j < agent.observed.length; j++){
+                if (agent.observed[j].Maneuver && agent.store.angleFlag != 4){
+                    agent.store.angleFlag = 1;
+                    agent.store.indexObs = j;
+                    console.log("----SOS----SOS----SOS----SOS----");
+                }else if (agent.observed[j].Maneuver && agent.store.angleFlag == 4){
+                    agent.store.indexObs = j;
+                    console.log("----SOS----SOS----SOS----SOS----");
                 }
-            }*/
+            }
             agent.store.time = this.time;
             agent.store.angle *= 1
+            agent.store.angleTemp *= 1 //для временного изменения
             agent.store.v *= 1
-            agent.update(agent.store, agent.observed, utils, decision, maneuvering, this.Bearingtemp, this.Distancetemp,this.Vtemp_x, this.Vtemp_y);
+            agent.update(active, agent.store, agent.observed, utils, decision, maneuvering, this.Bearingtemp, this.Distancetemp,this.Vtemp_x, this.Vtemp_y);
             agent.store.x = utils.round1(agent.store.x);
             agent.store.y = utils.round1(agent.store.y);
             agent.store.angle = utils.round5(agent.store.angle);
+            agent.store.angleTemp = utils.round5(agent.store.angleTemp);
             agent.store.v = utils.round5(agent.store.v);
         }
     },
@@ -169,22 +180,25 @@ const rti = {
                             
                             if (agent.store.angle == obs.course){
                                 obs.relativeVelocity = maneuvering.relativeVelocity(1, agent.store, obs);
-                                
                             }else{
                                 obs.relativeVelocity = maneuvering.relativeVelocity(0, agent.store, obs);
                             }
-                            console.log(obs.relativeVelocity);
+                            
+                            //console.log(obs.relativeVelocity);
                             obs.relativePath = obs.distance;
+                            obs.Maneuver = false; //флаг для определения совершения маневра
 
                             let purpose = decision.purpose(agent.store, obs, list[i].store);
-                            if(purpose == 2){
+                            if(purpose == 1 )  {
                                 obs.Maneuver = true;
-                                obs.timeManeuver = obs.relativePath/obs.relativeVelocity;
+                                //console.log(maneuvering.criticalAngle(agent.store, obs)); 
+                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
+                            } else if (purpose == 0 && agent.store.v > obs.v){
+                                obs.Maneuver = true;
+                                agent.store.active = "overtake";
+                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
+                                agent.store.angleFlag = 4;
                             }
-                            obs.Maneuver = false;
-                            //console.log(obs);
-                            
-                            
                         }else{
                             //вычисление относительного пути и относительной скорости для пересечения курсов
                             obs.relativeVelocity = maneuvering.relativeVelocity(2, agent.store, obs);

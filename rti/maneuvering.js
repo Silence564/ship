@@ -53,7 +53,13 @@ let maneuvering = {
         let down = 1- (m*Math.cos(teta));
         let p_0 = Math.atan(up/down)* 180 / Math.PI;
         //console.log(p_0);
+        //console.log(Bearing[agentFlag][1][0]- p_0);
         return [Bearing[agentFlag][1][0]- p_0, agentFlag];
+    },
+    criticalAngle: function(agent1, agent2){
+        if (agent1.v > agent2.v) return Math.asin(agent2.v/agent1.v)*180/Math.PI;
+        const Q = Math.asin(agent1.v/agent2.v)*180/Math.PI;
+        return Q;
     },
 }
 
