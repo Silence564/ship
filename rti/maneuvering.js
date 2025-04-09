@@ -15,7 +15,7 @@ let maneuvering = {
                 agentFlag = i;
         }
         
-        let teta = Math.round(Bearing[agentFlag][1][1] - Bearing[agentFlag][1][2]);
+        let teta = Bearing[agentFlag][1][1] - Bearing[agentFlag][1][2];
         let m = Distance[agentFlag][1][1]/Distance[agentFlag][1][2];
         //console.log(m, teta);
         const k_D = Math.sqrt(1+m*m-(2*m*Math.cos(teta)))
@@ -46,7 +46,7 @@ let maneuvering = {
                 agentFlag = i;
         }
         //console.log(Distance, Bearing);
-        let teta = Math.round(Bearing[agentFlag][1][1] - Bearing[agentFlag][1][2]);
+        let teta = Bearing[agentFlag][1][1] - Bearing[agentFlag][1][2];
         let m = Distance[agentFlag][1][1]/Distance[agentFlag][1][2];
         //console.log(m, teta);
         let up = m* Math.sin(teta);

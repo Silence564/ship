@@ -73,7 +73,6 @@ const rti = {
             }
             for(let j =0; j < agent.observed.length; j++){
                 if (agent.observed[j].Maneuver && agent.store.angleFlag != 4){
-                    agent.store.angleFlag = 1;
                     agent.store.indexObs = j;
                     console.log("----SOS----SOS----SOS----SOS----");
                 }else if (agent.observed[j].Maneuver && agent.store.angleFlag == 4){
@@ -148,7 +147,8 @@ const rti = {
                             let r = Math.sqrt((Vtemp_x[agent.store.name][j][1][1]-Vtemp_x[agent.store.name][j][1][0])*(Vtemp_x[agent.store.name][j][1][1]-Vtemp_x[agent.store.name][j][1][0])+(Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0])*(Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0]));
                             obs.v = r/1;
                             let course = Math.acos((Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0])/(r))*180/Math.PI;
-                            if (course > 90)
+                            
+                            if (course > 90 || course < 90)
                                 course = 360-course;
                             obs.course = course;
                             //console.log("result", course);
@@ -157,13 +157,15 @@ const rti = {
                             obs.Maneuver = false;
                         }
                     }
-                    
 
                     let flag = maneuvering.controle_check(obs, agent.store.name);    //Проверка на не пересечение зоны безопасного плавания
                     let relativecourse;
+                    if (agent.store.active == "stop" && flag && list[i].store.active == "null")
+                        agent.store.active = "null";
                     if (!flag){ //встречный и единый курс
                         relativecourse = maneuvering.relativeCourse(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
                         obs.relativeCourse = relativecourse[0];
+                        //console.log(obs.relativeCourse);
                         if(Bearingtemp[agent.store.name][relativecourse[1]][1][0] == relativecourse[0]){
                             //console.log(obs);
                             if ((Vtemp_x[agent.store.name][relativecourse[1]][1][1]-Vtemp_x[agent.store.name][relativecourse[1]][1][0] < 0 && agent.store.angle > 180 && agent.store.angle < 360) || (Vtemp_x[agent.store.name][relativecourse[1]][1][1]-Vtemp_x[agent.store.name][relativecourse[1]][1][0] > 0 && agent.store.angle > 0 && agent.store.angle < 180)){ 
@@ -171,8 +173,8 @@ const rti = {
                             }else if ((Vtemp_y[agent.store.name][relativecourse[1]][1][1]-Vtemp_y[agent.store.name][relativecourse[1]][1][0] > 0 && agent.store.angle > 270 && agent.store.angle < 90) || (Vtemp_y[agent.store.name][relativecourse[1]][1][1]-Vtemp_y[agent.store.name][relativecourse[1]][1][0] < 0 && agent.store.angle > 180 && agent.store.angle < 270)){ 
                                 obs.course = agent.store.angle;
                             }else{
-                                if (agent.store.angle + 180 > 360){
-                                    obs.course = agent.store.angle - 180;
+                                if (agent.store.angle + 180 >= 360){
+                                    obs.course = agent.store.angle;
                                 }else{
                                     obs.course = agent.store.angle + 180;
                                 }
@@ -193,21 +195,37 @@ const rti = {
                                 obs.Maneuver = true;
                                 //console.log(maneuvering.criticalAngle(agent.store, obs)); 
                                 agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
-                            } else if (purpose == 0 && agent.store.v > obs.v){
+                            }else if (purpose == 0 && agent.store.v > obs.v){
                                 obs.Maneuver = true;
                                 agent.store.active = "overtake";
                                 agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
                                 agent.store.angleFlag = 4;
+                            }else if(purpose == 3){
+                                obs.Maneuver = true;
+                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);
                             }
                         }else{
                             //вычисление относительного пути и относительной скорости для пересечения курсов
                             obs.relativeVelocity = maneuvering.relativeVelocity(2, agent.store, obs);
                             obs.relativePath = maneuvering.relativePath(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
-                            //console.log(obs.relativePath);
-                            //console.log(obs.relativeVelocity);
-                        }
-                        
-                        //console.log(obs.relativePath/obs.relativeVelocity);
+                            console.log(obs.relativePath);
+                            console.log(obs.relativeVelocity);
+                            let purpose1 = decision.purpose1(agent.store, obs, list[i].store);
+                            if (purpose1 == 1){
+                                obs.Maneuver = true;
+                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);
+                                agent.store.angleFlag = 5;
+                                agent.store.active = "stop";
+                                list[i].store.active = "stop";
+                            }else if (purpose1 == 2){
+                                obs.Maneuver = true;
+                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);
+                                agent.store.angleFlag = 5;
+                                agent.store.active = "stop";
+                                list[i].store.active = "stop";
+                            }
+                        } 
+                        console.log(obs.relativePath/obs.relativeVelocity);
                     }
                 }
             }

@@ -58,7 +58,7 @@ let utils = {
             angle -= 360
         if(angle < -180)
             angle += 360
-        return {"distance": distance, "angle": this.round5(angle), "trueBearing": this.round5(polarAngleGrad)};
+        return {"distance": distance, "angle": this.round5(angle), "trueBearing": this.round5(angle1+angle)};
     },
     safeArccos(value) {
         if(value > 1) value = 1;
