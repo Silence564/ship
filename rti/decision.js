@@ -10,12 +10,16 @@ let decision = {
             return 0;
         }
         if(agent1.length < agent2.length && Math.abs(agent1.angle - obs.course) == 180 && agent1.v < obs.v){ 
-            console.log("ОБЪЕКТ МАНЕВРА ИМЕЕТ МЕНЬШИЕ ГАБАРИТЫ, ОН СОВЕРШАЕТ МАНЕВР");
+            console.log("ОБЪЕКТ МАНЕВРА ИМЕЕТ БОЛЬШИЕ ГАБАРИТЫ И БОЛЬШУЮ СКОРОСТЬ, ОН ТОЖЕ СОВЕРШАЕТ МАНЕВР");
+            agent2.active = "theSlope";
             return 3;
         }else if (agent1.length < agent2.length && Math.abs(agent1.angle - obs.course) == 180){//делаем маневр
             //console.log(agent1.angle, obs.course);
             console.log("ОБЪЕКТ МАНЕВРА ИМЕЕТ БОЛЬШЕ ГАБАРИТЫ, СОВЕРШЕНИЕ МАНЕВРА");
             return 1;
+        }else if (agent1.active == "theSlope"){
+            console.log("ДЕЛАЕМ УКЛОН");
+            return 3;
         }
         return 2;
     },

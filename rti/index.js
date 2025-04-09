@@ -195,6 +195,7 @@ const rti = {
                                 obs.Maneuver = true;
                                 //console.log(maneuvering.criticalAngle(agent.store, obs)); 
                                 agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
+                                agent.store.angleFlag = 1;
                             }else if (purpose == 0 && agent.store.v > obs.v){
                                 obs.Maneuver = true;
                                 agent.store.active = "overtake";
@@ -202,14 +203,19 @@ const rti = {
                                 agent.store.angleFlag = 4;
                             }else if(purpose == 3){
                                 obs.Maneuver = true;
-                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);
+                                if (agent.store.v < obs.v){
+                                    agent.store.criticalAngle = 90 + (360 - obs.trueBearing) + maneuvering.criticalAngle(agent.store, obs);
+                                }else{
+                                    agent.store.criticalAngle = 15;
+                                    agent.store.angleFlag = 1;
+                                }
                             }
                         }else{
                             //вычисление относительного пути и относительной скорости для пересечения курсов
                             obs.relativeVelocity = maneuvering.relativeVelocity(2, agent.store, obs);
                             obs.relativePath = maneuvering.relativePath(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
-                            console.log(obs.relativePath);
-                            console.log(obs.relativeVelocity);
+                            //console.log(obs.relativePath);
+                            //console.log(obs.relativeVelocity);
                             let purpose1 = decision.purpose1(agent.store, obs, list[i].store);
                             if (purpose1 == 1){
                                 obs.Maneuver = true;
@@ -225,7 +231,7 @@ const rti = {
                                 list[i].store.active = "stop";
                             }
                         } 
-                        console.log(obs.relativePath/obs.relativeVelocity);
+                        //console.log(obs.relativePath/obs.relativeVelocity);
                     }
                 }
             }

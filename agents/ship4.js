@@ -1,11 +1,11 @@
 module.exports = {
     "init": {
         "x": 0, // м
-        "y": 0, // м
+        "y": -2000, // м
         "angle": 90, // градусов относительно оси y
-        "v": 10, // метров в секунду 10
-        "length": 150, // длина в метрах
-        "color": "blue",
+        "v": 6, // метров в секунду
+        "length": 200, // длина в метрах
+        "color": "purple",
         "frequency": 1
     },
     "update": function (active, store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {

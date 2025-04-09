@@ -10,6 +10,7 @@ let active = {
             }else {
                 store.angleFlag = 2;
                 store.angle = store.angleTemp;
+                store.active = "null";
             }
         }else if (decision.checkAngle(store) == 2 && decision.flagPath == 1){ //совершаем поворот после маневра при движении навстречу
             if (store.angleTemp - store.angle < Math.abs(store.criticalAngle)){
