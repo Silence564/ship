@@ -4,7 +4,7 @@ let decision = {
     flagPath: 0,
     DistanceWalk: 0,
     purpose: function(agent1, obs, agent2){ //делаем маневр
-        if(agent1.v > obs.v && agent1.angle == obs.course && obs.distance < 100){
+        if(agent1.v > obs.v && agent1.angle == obs.course){
             if(agent2.active == "overtake") return 2; //не препятствуем обгону
             
             console.log("СОВЕРШАЕМ ОБГОН");
@@ -30,14 +30,15 @@ let decision = {
                 console.log("СБАВЛЯЕМ СКОРОСТЬ ");
                 return 3; //  не обгоняем, так как объекта маневра совершает маневр;
             }
-        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v >= obs.v && obs.trueBearing < 270){
+        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v > obs.v && obs.trueBearing < 180){
             console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ПРАВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ")
             return 1;
         }
-        //if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v <= obs.v && obs.trueBearing < 180){
-        //    console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ПРАВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ")
+        //if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v < obs.v && obs.trueBearing >= 180){
+        //    console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ЛЕВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ!!!!")
         //    return 2;
-        //}
+       // }
+       return 0;
     },
     purpose2: function(agent, env){
         if (env.trueBearing != 360 ){

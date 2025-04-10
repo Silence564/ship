@@ -284,7 +284,7 @@ const rti = {
                                 agent.store.angleFlag = 5;
                                 agent.store.active = "stop";
                                 list[i].store.active = "stop";
-                            }else if(purpose1 == 3){
+                            }else if(purpose1 == 3 && obs.distance < 500){
                                 agent.store.angleFlag = 8;
                                 agent.store.the_reason_for_the_decrease = list[i].store.name;
                             }
