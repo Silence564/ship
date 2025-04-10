@@ -1,3 +1,5 @@
+const { braking } = require("./utils");
+
 let active = {
     main: function(store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y){
         if (decision.checkAngle(store) == 1){ //совершаем поворот при движении на встречу
@@ -62,6 +64,34 @@ let active = {
             store.angleFlag = 0;
             store.angle = store.angleTemp; 
             store.active = "null";
+        }else if(decision.checkAngle(store) == 7){
+            if (Math.round(store.angle - store.newCourse) != 0 && Math.round(store.angle - store.newCourse) > 0){
+                [dAngle, dx, dy] = utils.rotate(false, store);
+                store.angle += dAngle;
+                store.x += dx;
+                store.y += dy;
+                console.log("----------------ROTATE------------------");
+            }else if (Math.round(store.angle - store.newCourse) != 0 && Math.round(store.angle - store.newCourse) < 0){
+                [dAngle, dx, dy] = utils.rotate(true, store);
+                store.angle += dAngle;
+                store.x += dx;
+                store.y += dy;
+                console.log("----------------ROTATE------------------");
+            }else {
+                store.angleFlag = 0;
+                store.active = "finish";
+                store.angle = store.angleTemp;
+            }
+        }else if(decision.checkAngle(store) == 8){
+            if (observed[store.indexObs].v < store.v)
+                store.angleFlag = 0;
+            store.v = utils.braking(store.v, -0.5);
+        }else if(decision.checkAngle(store) == 9){
+            console.log(store.vTemp);
+            if (store.v > store.vTemp) {
+                store.angleFlag = 0;
+                store.the_reason_for_the_decrease = "null";}
+            store.v = utils.braking(store.v, 0.5);
         }else{ //движение прямо
             [dx, dy] = utils.linearIncrement(store.angle, store.v); // Пересчитали в приращение
             store.x += dx; // Применили приращение

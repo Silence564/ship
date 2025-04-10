@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 router.get('/init', function(req, res, next) {
     try {
         rti.init();
-        let r = Object.assign({}, {"agents": rti.agents}, {"config": rti.config});
+        let r = Object.assign({}, {"agents": rti.agents}, {"config": rti.config}, {"zones": rti.zones});
         res.send(JSON.stringify(r));
     } catch(e) {
         console.error(e);

@@ -8,7 +8,7 @@
     "std": "20"
   },
   "run": {
-    "delay": "50",
+    "delay": "20",
     "amount": "50"
   },
   "screen": {

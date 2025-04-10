@@ -37,7 +37,10 @@ let utils = {
     decartToPolar: function(dx, dy) {
         return [Math.sqrt(dy*dy + dx*dx), Math.atan2(dy, dx)]
     },
-
+    braking: function(v, a = 0.5){
+        if (v+a < 1) return v;
+        return v + a;
+    },
     observation: function(agent1, agent2) {
         // angle = arccos(dy / distance)
         const x1 = agent1.x;
@@ -50,6 +53,60 @@ let utils = {
         const signDx = Math.sign(dx) == 0 ? 1 : Math.sign(dx)
         let polarAngle = signDx * this.safeArccos(dy / distance);
         const angle1 = agent1.angle;
+        const polarAngleGrad = polarAngle * 180 / Math.PI;
+        let angle = polarAngleGrad - angle1;
+        if(isNaN(angle))
+            angle = 0
+        if(angle > 180)
+            angle -= 360
+        if(angle < -180)
+            angle += 360
+        return {"distance": distance, "angle": this.round5(angle), "trueBearing": this.round5(angle1+angle)};
+    },
+    distanceToSegment: function(px, py, ax, ay, bx, by) {
+        const apx = px - ax;
+        const apy = py - ay;
+        const bax = bx - ax;
+        const bay = by - ay;
+    
+        const ab2 = bax * bax + bay * bay;
+        const ap_ab = apx * bax + apy * bay;
+        let t = ap_ab / ab2;
+    
+        if (t < 0.0) {
+            t = 0.0;
+        } else if (t > 1.0) {
+            t = 1.0;
+        }
+    
+        const dx = ax + t * bax - px;
+        const dy = ay + t * bay - py;
+    
+        return Math.sqrt(dx * dx + dy * dy);
+    },
+    distanceToPolygonANDangle: function(agent, polygon) {
+        let minDist = Number.POSITIVE_INFINITY;
+        let closestVertexIndex = -1;
+        let dx = 0;
+        let dy = 0;
+        for (let i = 0; i < polygon.length; ++i) {
+            const a = polygon[i];
+            const b = polygon[(i + 1) % polygon.length];
+            const dist = this.distanceToSegment(agent.x, agent.y, a.x, a.y, b.x, b.y);
+            if (dist < minDist) {
+                minDist = dist;
+                closestVertexIndex = i;
+            }
+            if (closestVertexIndex >= 0) {
+                const closestVertex = polygon[closestVertexIndex];
+                dx = closestVertex.x - agent.x;
+                dy = closestVertex.y - agent.y;
+            }
+        }
+        const distance = minDist;
+        const signDx = Math.sign(dx) == 0 ? 1 : Math.sign(dx)
+        let polarAngle = signDx * this.safeArccos(dy / distance);
+        const angle1 = agent.angle;
         const polarAngleGrad = polarAngle * 180 / Math.PI;
         let angle = polarAngleGrad - angle1;
         if(isNaN(angle))

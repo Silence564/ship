@@ -1,5 +1,13 @@
 let maneuvering = {
 
+    controle_check_line: function(data, nameAgent, description){
+        const distance = data.distance;
+        if (distance <= 800 && data.trueBearing > 0 && data.angle < 90 && data.angle > -90){
+            console.log("Нарушена зона безопасного плавания. Впереди", nameAgent, " опасная зона ", description);
+            return 0;
+        }
+        return 1;
+    },
     controle_check: function(data, nameAgent){
         const distance = data.distance;
         if (distance <= 800){
@@ -60,6 +68,20 @@ let maneuvering = {
         if (agent1.v > agent2.v) return Math.asin(agent2.v/agent1.v)*180/Math.PI;
         const Q = Math.asin(agent1.v/agent2.v)*180/Math.PI;
         return Q;
+    },
+    CourseNew: function(agent, env){
+        let D_1 = 500;
+        if (env.angle < 0){
+            D_1 = env.distance;
+        }
+        if(D_1 > env.distance) D_1 = env.distance - 100;
+        
+        let D_0 = env.distance;
+        let q_0 = Math.asin(D_1/D_0)*180/Math.PI;
+        console.log(q_0);
+        let K_1 = env.trueBearing+180-q_0;
+        let K_2 = env.trueBearing-180+q_0;
+        return [K_1, K_2];
     },
 }
 

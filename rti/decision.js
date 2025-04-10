@@ -6,6 +6,7 @@ let decision = {
     purpose: function(agent1, obs, agent2){ //делаем маневр
         if(agent1.v > obs.v && agent1.angle == obs.course && obs.distance < 100){
             if(agent2.active == "overtake") return 2; //не препятствуем обгону
+            
             console.log("СОВЕРШАЕМ ОБГОН");
             return 0;
         }
@@ -24,16 +25,41 @@ let decision = {
         return 2;
     },
     purpose1: function(agent1, obs, agent2){ //делаем маневр для пересечения курса
-        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v > obs.v && obs.trueBearing < 270){
+        //console.log(agent2);
+        if(agent2.active == "envM" && agent1.v > obs.v) {
+                console.log("СБАВЛЯЕМ СКОРОСТЬ ");
+                return 3; //  не обгоняем, так как объекта маневра совершает маневр;
+            }
+        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v >= obs.v && obs.trueBearing < 270){
             console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ПРАВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ")
             return 1;
         }
-        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v < obs.v && obs.distance < 500 && obs.trueBearing < 270){
-            console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ПРАВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ")
-            return 2;
+        //if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v <= obs.v && obs.trueBearing < 180){
+        //    console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ПРАВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ")
+        //    return 2;
+        //}
+    },
+    purpose2: function(agent, env){
+        if (env.trueBearing != 360 ){
+            console.log("ПОД УГЛОМ", env.angle, "НАХОДИТСЯ ОПАСНАЯ ЗОНА, ОТКЛОНЯЕМСЯ ОТ НЕЕ");
+            return 1;
         }
+        return 0;
+    },
+    check_reason: function(agent1, obs, agent2){
+        if (agent1.the_reason_for_the_decrease == agent2.name && obs.distance > 1500) return 1
+        return 0;
     },
     checkAngle: function(agent){
+        if(agent.angleFlag == 9){
+            return 9;
+        }
+        if(agent.angleFlag == 8){
+            return 8;
+        }
+        if(agent.angleFlag == 7){
+            return 7;
+        }
         if(agent.angleFlag == 6){
             return 6;
         }
@@ -88,8 +114,13 @@ module.exports = decision;
 //Значения для флага angleFlag
 /*0 - маневр не требуется
 1 - отклоняемся на заданный угол
-2 - контролируем прохождение промежуточного значения 
+2 - контролируем прохождение промежуточного значения
+
 3 - выполняем возвращение на прошлый курс, выход из обгона
 4 - совершение маневра обгона
+
 5 - маневр при пересечении курсов
-6 - выход на траверз и возращение на первоначальный курс*/
+6 - выход на траверз и возращение на первоначальный курс
+7 - обход опасной зоны
+8 - сбавляем скорость
+9 - ожидание возвращения скорости*/

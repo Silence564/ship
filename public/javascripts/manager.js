@@ -61,6 +61,7 @@ async function init() {
         const ctx = canvas.getContext('2d');
         drawScale(ctx, json.config.screen.scale);
         drawAllShips(json);
+        drawAllZones(json);
         document.getElementById("next").disabled=false;
         document.getElementById("json").disabled=false;
         document.getElementById("config").disabled=false;
@@ -112,6 +113,7 @@ async function next() {
         addHistory(resp);
         struct(json);
         drawAllShips(json);
+        drawAllZones(json);
     } else {
         console.log(response);
         alert("Ошибка HTTP: " + response.status);
@@ -145,8 +147,10 @@ function history() {
                 for(let k = 0; k < ship.real.length; k++) {
                     obs += `${ship.observed[k].name};\t${ship.observed[k].distance};\t${ship.observed[k].angle};\t${ship.observed[k].trueBearing};\t`
                     real += `${ship.real[k].name};\t${ship.real[k].distance};\t${ship.real[k].angle};\t${ship.observed[k].trueBearing};\t`
+                    //console.log(env);
+                    //env += `${ship.enviroment[k].name};\t${ship.enviroment[k].distance};\t${ship.enviroment[k].angle};\t${ship.enviroment[k].trueBearing};\t`
                 }
-                data += real + obs + "<br>\n"
+                data += real + obs +"<br>\n"
             }
             map.set(ship.store.name, data);        }
     }
@@ -176,7 +180,7 @@ function struct(json) {
     let div = document.getElementById("response");
     div.innerHTML = `<span style="color: blue"><b>Time</b>: ${json.agents[0].store.time}</span><br>`
     for(let ship of json.agents)
-        div.innerHTML += `<b>Ship</b> <u>${ship.store.name}</u>: (x,y, angle, v): (${ship.store.x}, ${ship.store.y}, ${ship.store.angle}, ${ship.store.v}),<br><div style="padding:10px"><span style="color: blue">observed</span>: ${JSON.stringify(ship.observed)}</div><br>`;
+        div.innerHTML += `<b>Ship</b> <u>${ship.store.name}</u>: (x,y, angle, v): (${ship.store.x}, ${ship.store.y}, ${ship.store.angle}, ${ship.store.v}),<br><div style="padding:10px"><span style="color: blue">observed</span>: ${JSON.stringify(ship.observed)}</div><br><div style="padding:10px"><span style="color: blue">enviroment</span>: ${JSON.stringify(ship.enviroment)}</div><br><br>,`;
     if(json.config) {
         div.innerHTML += `<br>${JSON.stringify(json.config, null, "&nbsp;").replaceAll("\n", "<br>")}`
         configJson = json.config
@@ -187,6 +191,29 @@ function struct(json) {
 function drawAllShips(json) {
     for(let ship of json.agents)
         drawShip(ship)
+}
+
+function drawAllZones(json) {
+    for(let zona of json.zones)
+        drawZone(zona)
+}
+
+function drawZone(json) {
+    const canvas = document.getElementById("sea");
+    const ctx = canvas.getContext('2d');
+    
+    ctx.beginPath();
+    ctx.moveTo(json.init.points[0].x / configJson.screen.scale + 400, 400 - json.init.points[0].y / configJson.screen.scale);
+    for (let i = 1; i < json.init.points.length; i++) {
+        ctx.lineTo(json.init.points[i].x / configJson.screen.scale + 400, 400 - json.init.points[i].y / configJson.screen.scale);
+    }
+    ctx.closePath();
+    ctx.fillStyle = json.init.color;
+    ctx.fill();
+    ctx.strokeStyle = json.init.color || '#000'; // Цвет по умолчанию черный
+    ctx.lineWidth = 2; // Толщина линии
+    
+    ctx.stroke();
 }
 
 function drawShip(json) {
