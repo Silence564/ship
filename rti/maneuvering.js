@@ -1,22 +1,22 @@
-let maneuvering = {
-
-    controle_check_line: function(data, nameAgent, description){
+class maneuvering {
+    constructor(){};
+    controle_check_line(data, nameAgent, description){
         const distance = data.distance;
         if (distance <= 800 && data.trueBearing > 0 && data.angle < 90 && data.angle > -90){
             console.log("Нарушена зона безопасного плавания. Впереди", nameAgent, " опасная зона ", description);
             return 0;
         }
         return 1;
-    },
-    controle_check: function(data, nameAgent){
+    }
+    controle_check(data, nameAgent){
         const distance = data.distance;
         if (distance <= 800){
             console.log("Нарушена зона безопасного плавания. Объект ", data.name, " вторгся в зону объекта ", nameAgent);
             return 0;
         }
         return 1;
-    },
-    relativePath: function(agent1, agent2, obs, Bearing, Distance){
+    }
+    relativePath(agent1, agent2, obs, Bearing, Distance){
         let agentFlag = 0;
         for (let i =0 ; i< Bearing.length; i++){
             if (agent2.name == Bearing[i][0])
@@ -30,8 +30,8 @@ let maneuvering = {
         //console.log("k_d=", k_D);
         //console.log( k_D*Distance[agentFlag][1][2]);
         return k_D*Distance[agentFlag][1][2];
-    },
-    relativeVelocity:  function(flag, agent, obs){
+    }
+    relativeVelocity(flag, agent, obs){
         switch (flag){
             case 0:
                 return agent.v + obs.v;
@@ -46,8 +46,8 @@ let maneuvering = {
                 return k_V*obs.course;
             }
         }
-    },
-    relativeCourse: function(agent1, agent2, obs, Bearing, Distance){
+    }
+    relativeCourse(agent1, agent2, obs, Bearing, Distance){
         let agentFlag = 0;
         for (let i =0 ; i< Bearing.length; i++){
             if (agent2.name == Bearing[i][0])
@@ -63,13 +63,13 @@ let maneuvering = {
         //console.log(p_0);
         //console.log(Bearing[agentFlag][1][0]- p_0);
         return [Bearing[agentFlag][1][0]- p_0, agentFlag];
-    },
-    criticalAngle: function(agent1, agent2){
+    }
+    criticalAngle(agent1, agent2){
         if (agent1.v > agent2.v) return Math.asin(agent2.v/agent1.v)*180/Math.PI;
         const Q = Math.asin(agent1.v/agent2.v)*180/Math.PI;
         return Q;
-    },
-    CourseNew: function(agent, env){
+    }
+    CourseNew(agent, env){
         let D_1 = 500;
         if (env.angle < 0){
             D_1 = env.distance;
@@ -82,7 +82,7 @@ let maneuvering = {
         let K_1 = env.trueBearing+180-q_0;
         let K_2 = env.trueBearing-180+q_0;
         return [K_1, K_2];
-    },
+    }
 }
 
 module.exports = maneuvering;

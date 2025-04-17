@@ -1,4 +1,4 @@
-let rti = require('../rti');
+let rti = new (require('../rti'));
 let express = require('express');
 let router = express.Router();
 
