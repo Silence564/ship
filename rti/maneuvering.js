@@ -78,7 +78,7 @@ let maneuvering = {
         
         let D_0 = env.distance;
         let q_0 = Math.asin(D_1/D_0)*180/Math.PI;
-        console.log(q_0);
+        //console.log(q_0);
         let K_1 = env.trueBearing+180-q_0;
         let K_2 = env.trueBearing-180+q_0;
         return [K_1, K_2];

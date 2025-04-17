@@ -131,14 +131,18 @@ const rti = {
                 if (!flag_env){
                     if(decision.purpose2(agent.store, env)){
                         env.Maneuver = true;
-                        let newCourse;
+                        let newCourses = maneuvering.CourseNew(agent.store, env);
                         if(agent.store.active != "envM" && agent.store.angleFlag !=7) {
-                            newCourse = maneuvering.CourseNew(agent.store, env);
-                            if(env.angle > -1){
-                                agent.store.newCourse = newCourse[1]; 
-                            }else{
-                                agent.store.newCourse = newCourse[0];
+                        // Выбор оптимального курса (ближайшего к исходному направлению)
+                            let selectedCourse = newCourses.reduce((best, current) => {
+                                return Math.abs(current - agent.store.angle) < Math.abs(best - agent.store.angle) ? current : best;
+                            });
+                            if (selectedCourse == agent.store.angle){
+                                if(env.thueBearing <=180){
+                                    selectedCourse = agent.store.angle/2;
+                                }
                             }
+                            agent.store.newCourse = selectedCourse;
                         } 
                         agent.store.active = "envM";  
                         agent.store.angleFlag = 7;
@@ -198,11 +202,7 @@ const rti = {
                             //console.log("xn:", 0, "yn:", Vtemp_y[agent.store.name][j][1][0]+1-Vtemp_y[agent.store.name][j][1][0])
                             let r = Math.sqrt((Vtemp_x[agent.store.name][j][1][1]-Vtemp_x[agent.store.name][j][1][0])*(Vtemp_x[agent.store.name][j][1][1]-Vtemp_x[agent.store.name][j][1][0])+(Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0])*(Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0]));
                             obs.v = r/1;
-                            let course = Math.acos((Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0])/(r))*180/Math.PI;
-                            
-                            if (course > 90 || course < 90)
-                                course = 360-course;
-                            obs.course = course;
+                            //let course = Math.acos((Vtemp_y[agent.store.name][j][1][1]-Vtemp_y[agent.store.name][j][1][0])/(r))*180/Math.PI;
                             //console.log("result", course);
                             //console.log(obs.name, obs.v)
                             flagXY = 0;
@@ -223,17 +223,27 @@ const rti = {
                         //console.log(obs.relativeCourse);
                         if(Bearingtemp[agent.store.name][relativecourse[1]][1][0] == relativecourse[0]){//встречный и единый курс
                             //console.log(obs);
-                            if ((Vtemp_x[agent.store.name][relativecourse[1]][1][1]-Vtemp_x[agent.store.name][relativecourse[1]][1][0] < 0 && agent.store.angle > 180 && agent.store.angle < 360) || (Vtemp_x[agent.store.name][relativecourse[1]][1][1]-Vtemp_x[agent.store.name][relativecourse[1]][1][0] > 0 && agent.store.angle > 0 && agent.store.angle < 180)){ 
-                                obs.course = agent.store.angle;
-                            }else if ((Vtemp_y[agent.store.name][relativecourse[1]][1][1]-Vtemp_y[agent.store.name][relativecourse[1]][1][0] > 0 && agent.store.angle > 270 && agent.store.angle < 90) || (Vtemp_y[agent.store.name][relativecourse[1]][1][1]-Vtemp_y[agent.store.name][relativecourse[1]][1][0] < 0 && agent.store.angle > 180 && agent.store.angle < 270)){ 
-                                obs.course = agent.store.angle;
-                            }else{
-                                if (agent.store.angle + 180 >= 360){
-                                    obs.course = agent.store.angle;
-                                }else{
-                                    obs.course = agent.store.angle + 180;
+                            const angleDiff = Math.abs(agent.store.angle % 360 - relativecourse[0]);
+                            // Проверяем параллельность или встречу (равенство углов или разница равна 180)
+                            if (angleDiff == 0 || angleDiff == 180) {
+                                // Рассматриваем динамику изменений координаты x и y
+                                const deltaX = Vtemp_x[agent.store.name][relativecourse[1]][1][1] - Vtemp_x[agent.store.name][relativecourse[1]][1][0];
+                                const deltaY = Vtemp_y[agent.store.name][relativecourse[1]][1][1] - Vtemp_y[agent.store.name][relativecourse[1]][1][0];
+                                if (deltaX !== 0) { // Есть движение по горизонтали
+                                    if ((deltaX < 0 && agent.store.angle > 180) || (deltaX > 0 && agent.store.angle <= 180)) {
+                                        obs.course = agent.store.angle;
+                                    } else {
+                                        obs.course = (agent.store.angle + 180) % 360;
+                                    }
+                                } else if (deltaY !== 0) { // Движение по вертикали
+                                    if ((deltaY > 0 && (agent.store.angle > 270 || agent.store.angle < 90)) || (deltaY < 0 && agent.store.angle > 180 && agent.store.angle < 270)) {
+                                        obs.course = agent.store.angle;
+                                    } else {
+                                        obs.course = (agent.store.angle + 180) % 360;
+                                    }
                                 }
                             }
+
                             
                             if (agent.store.angle == obs.course){
                                 obs.relativeVelocity = maneuvering.relativeVelocity(1, agent.store, obs);

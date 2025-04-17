@@ -30,14 +30,15 @@ let decision = {
                 console.log("СБАВЛЯЕМ СКОРОСТЬ ");
                 return 3; //  не обгоняем, так как объекта маневра совершает маневр;
             }
-        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v > obs.v && obs.trueBearing < 180){
+        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v >= obs.v && obs.trueBearing < 180){
             console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ПРАВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ")
             return 1;
         }
-        //if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v < obs.v && obs.trueBearing >= 180){
-        //    console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ЛЕВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ!!!!")
-        //    return 2;
-       // }
+
+        if (obs.angle > 0 && agent1.active != "stop" && agent2.active != "stop" && agent1.v >= obs.v && obs.trueBearing >= 180){
+            console.log("ОБЪЕКТ МАНЕВРА НАХОДИТСЯ ПО ЛЕВУЮ СТОРОНУ, УСТУПАЕМ ПУТЬ!!!!")
+            return 2;
+        }
        return 0;
     },
     purpose2: function(agent, env){
@@ -86,11 +87,11 @@ let decision = {
         //console.log(Distancetemp);
         if (Distancetemp[1][1] < this.min){
             this.min = Distancetemp[1][1];
-            flag = 0;
+            this.flag = 0;
         }else{
-            flag++;
+            this.flag++;
         }
-        if (flag == 5){
+        if (this.flag == 5){
             return 1;
         }
         return 0;
