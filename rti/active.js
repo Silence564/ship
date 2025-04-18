@@ -5,12 +5,18 @@ const BrakeStrategy = require('../strategy/brake_strategy');
 const BoostStrategy = require('../strategy/boost_strategy');
 const NullStrategy = require('../strategy/null_strategy');
 const Agent = require('../strategy/agent');
+const ROTATION_THRESHOLD = 20;
 
 class active {
     constructor(){
         this.agent = new Agent(new LinearMovementStrategy());
         this.decision = new (require('./decision'));
     }
+    normalizeAngle(angle) {
+        while (angle < 0) angle += 360;
+        while (angle >= 360) angle -= 360;
+        return angle;
+    }    
     main(store, observed, bearingTemp, distanceTemp, vTempX, vTempY) {
         this.agent.store = store;
         if (this.decision.checkAngle(store) == 1){ //совершаем поворот при движении на встречу
@@ -99,6 +105,7 @@ class active {
             this.agent.move();
 
     }
+
 }
 
 module.exports = active;

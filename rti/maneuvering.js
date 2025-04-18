@@ -1,8 +1,11 @@
 class maneuvering {
-    constructor(){};
-    controle_check_line(data, nameAgent, description){
+    constructor(){
+        this.utils = new (require('./utils'));
+    };
+    controle_check_line(data, nameAgent, description) {
         const distance = data.distance;
-        if (distance <= 800 && data.trueBearing > 0 && data.angle < 90 && data.angle > -90){
+        const safeThreshold = 1000; // допустимый безопасный порог
+        if (distance <= safeThreshold && data.trueBearing > 0 && data.angle < 90 && data.angle > -90) {
             console.log("Нарушена зона безопасного плавания. Впереди", nameAgent, " опасная зона ", description);
             return 0;
         }

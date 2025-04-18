@@ -14,7 +14,6 @@ class utils {
         const angle0 = angle / 180 * Math.PI;
         return this.polarToDecart(angle0, v0)
     }
-
     rotate(right, store) {
         if(!store.length)
             throw new Error("Expected length in store");
@@ -70,7 +69,20 @@ class utils {
             angle += 360
         return {"distance": distance, "angle": this.round5(angle), "trueBearing": this.round5(angle1+angle)};
     }
-
+    predictFuturePosition(agent, offsetDistance = 500) {
+        const angleRad = agent.angle * Math.PI / 180; // Преобразуем угол в радианы
+        const dx = offsetDistance * Math.cos(angleRad);
+        const dy = offsetDistance * Math.sin(angleRad);
+        return { x: agent.x + dx, y: agent.y + dy };
+    }
+    projectOnSegment(px, py, ax, ay, bx, by) {
+        const abx = bx - ax;
+        const aby = by - ay;
+        const t = ((px - ax) * abx + (py - ay) * aby) / (abx * abx + aby * aby);
+        if (t < 0) return { x: ax, y: ay };
+        if (t > 1) return { x: bx, y: by };
+        return { x: ax + t * abx, y: ay + t * aby };
+    }
     distanceToSegment(px, py, ax, ay, bx, by) {
         const apx = px - ax;
         const apy = py - ay;
@@ -92,10 +104,11 @@ class utils {
     
         return Math.sqrt(dx * dx + dy * dy);
     }
-
     distanceToPolygonANDangle(agent, polygon) {
         let minDist = Number.POSITIVE_INFINITY;
-        let closestVertexIndex = -1;
+        const predictedPosition = this.predictFuturePosition(agent);
+        //let closestVertexIndex = -1;
+        let closestEdge = null;
         let dx = 0;
         let dy = 0;
         for (let i = 0; i < polygon.length; ++i) {
@@ -104,14 +117,18 @@ class utils {
             const dist = this.distanceToSegment(agent.x, agent.y, a.x, a.y, b.x, b.y);
             if (dist < minDist) {
                 minDist = dist;
-                closestVertexIndex = i;
+                //closestVertexIndex = i;
+                closestEdge = { a, b };
             }
-            if (closestVertexIndex >= 0) {
-                const closestVertex = polygon[closestVertexIndex];
-                dx = closestVertex.x - agent.x;
-                dy = closestVertex.y - agent.y;
-            }
+            //if (closestVertexIndex >= 0) {
+              //  const closestVertex = polygon[closestVertexIndex];
+                //dx = closestVertex.x - agent.x;
+                //dy = closestVertex.y - agent.y;
+            //}
         }
+        const projPoint = this.projectOnSegment(predictedPosition.x, predictedPosition.y, closestEdge.a.x, closestEdge.a.y, closestEdge.b.x, closestEdge.b.y);
+        dx = projPoint.x - predictedPosition.x;
+        dy = projPoint.y - predictedPosition.y;
         const distance = minDist;
         const signDx = Math.sign(dx) == 0 ? 1 : Math.sign(dx)
         let polarAngle = signDx * this.safeArccos(dy / distance);
