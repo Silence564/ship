@@ -8,9 +8,9 @@ module.exports = {
         "color": "purple",
         "frequency": 1
     },
-    "update": function (active, store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {
+    "update": function (active, store, observed,  maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {
         //if(store.time >= 50 && store.time < 80 || store.time >= 110 && store.time < 160)
           //  store.angle += 1; // Поворачиваем в заданные интервалы времени
-        active.main(store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y)         
+        active.main(store, observed,  maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y)         
     }
 }

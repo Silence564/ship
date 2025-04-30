@@ -1,0 +1,497 @@
+[
+  {
+    "experimentNumber": 1,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 2,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 3,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 4,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 5,
+    "finalPositions": 80,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 6,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 7,
+    "finalPositions": 62,
+    "boom": 7
+  },
+  {
+    "experimentNumber": 8,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 9,
+    "finalPositions": 102,
+    "boom": 26
+  },
+  {
+    "experimentNumber": 10,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 11,
+    "finalPositions": 12,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 12,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 13,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 14,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 15,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 16,
+    "finalPositions": 75,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 17,
+    "finalPositions": 44,
+    "boom": 9
+  },
+  {
+    "experimentNumber": 18,
+    "finalPositions": 25,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 19,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 20,
+    "finalPositions": 210,
+    "boom": 63
+  },
+  {
+    "experimentNumber": 21,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 22,
+    "finalPositions": 46,
+    "boom": 2
+  },
+  {
+    "experimentNumber": 23,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 24,
+    "finalPositions": 18,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 25,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 26,
+    "finalPositions": 85,
+    "boom": 12
+  },
+  {
+    "experimentNumber": 27,
+    "finalPositions": 114,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 28,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 29,
+    "finalPositions": 273,
+    "boom": 6
+  },
+  {
+    "experimentNumber": 30,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 31,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 32,
+    "finalPositions": 48,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 33,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 34,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 35,
+    "finalPositions": 68,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 36,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 37,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 38,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 39,
+    "finalPositions": 27,
+    "boom": 3
+  },
+  {
+    "experimentNumber": 40,
+    "finalPositions": 12,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 41,
+    "finalPositions": 29,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 42,
+    "finalPositions": 26,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 43,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 45,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 46,
+    "finalPositions": 97,
+    "boom": 14
+  },
+  {
+    "experimentNumber": 47,
+    "finalPositions": 40,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 48,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 49,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 50,
+    "finalPositions": 32,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 51,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 52,
+    "finalPositions": 241,
+    "boom": 46
+  },
+  {
+    "experimentNumber": 53,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 54,
+    "finalPositions": 30,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 55,
+    "finalPositions": 16,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 56,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 57,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 58,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 59,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 60,
+    "finalPositions": 589,
+    "boom": 2
+  },
+  {
+    "experimentNumber": 61,
+    "finalPositions": 30,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 62,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 63,
+    "finalPositions": 15,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 64,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 65,
+    "finalPositions": 101,
+    "boom": 11
+  },
+  {
+    "experimentNumber": 66,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 67,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 68,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 69,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 70,
+    "finalPositions": 48,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 71,
+    "finalPositions": 9,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 72,
+    "finalPositions": 3,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 73,
+    "finalPositions": 32,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 74,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 75,
+    "finalPositions": 43,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 76,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 77,
+    "finalPositions": 60,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 78,
+    "finalPositions": 132,
+    "boom": 12
+  },
+  {
+    "experimentNumber": 79,
+    "finalPositions": 50,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 80,
+    "finalPositions": 64,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 81,
+    "finalPositions": 4,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 82,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 83,
+    "finalPositions": 34,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 84,
+    "finalPositions": 34,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 85,
+    "finalPositions": 29,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 86,
+    "finalPositions": 31,
+    "boom": 6
+  },
+  {
+    "experimentNumber": 87,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 88,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 89,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 90,
+    "finalPositions": 176,
+    "boom": 2
+  },
+  {
+    "experimentNumber": 91,
+    "finalPositions": 46,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 92,
+    "finalPositions": 34,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 93,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 94,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 95,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 96,
+    "finalPositions": 0,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 97,
+    "finalPositions": 50,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 98,
+    "finalPositions": 21,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 99,
+    "finalPositions": 69,
+    "boom": 0
+  },
+  {
+    "experimentNumber": 100,
+    "finalPositions": 0,
+    "boom": 0
+  }
+]

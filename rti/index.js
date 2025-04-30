@@ -1,29 +1,36 @@
-const utils = require('./utils');
-const decision = require('./decision');
-const maneuvering = require('./maneuvering');
-const active = require('./active');
 const fs = require('fs');
 const folder = "./agents/";
 const folder2 = "./environment/";
+const NUM_EXPERIMENTS = 5;
+const NUM_AGENTS = 10;
+const experimentsController = require('./experiments_controller');
 
-const rti = {
-    agents: [], //массив агентов
-    zones: [], //массив опасных зон
-    time: 0, // время
-    config: {},
-    Bearingtemp: [],
-    Distancetemp: [],
-    Vtemp_x: [],
-    Vtemp_y: [],
-    flag_desicion: 0,
-    
-    init: function () {
+
+class rti {
+    constructor(){
+        this.agents = []; //массив агентов
+        this.zones = []; //массив опасных зон
+        this.time = 0; // время
+        this.config = {};
+        this.Bearingtemp = [];
+        this.Distancetemp = [];
+        this.Vtemp_x = [];
+        this.Vtemp_y = [];
+        this.utils = new (require('./utils'));
+        this.maneuvering = new (require('./maneuvering'));
+        this.active = new (require('./active'));
+        this.decision = new (require('./decision'));
+    }
+
+    init() {
         this.time = 0;
         this.agents = [];
         this.zones = [];
-
+        this.flag = 0;
         this.Bearingtemp = [];
         this.Distancetemp = [];
+        //this.collisionCount = 0;
+        //this.boom = 0;
 
         let files = fs.readdirSync(folder)
         console.log(JSON.stringify(files))
@@ -37,6 +44,14 @@ const rti = {
                 agent = eval(agent);
                 agent.init.name = file.substr(0, file.length - 3); 
                 agent.init.time = this.time;
+                // Генерируем случайные стартовые положения и маршруты
+                //agent.init.x = Math.floor(Math.random() * 7000 - 3000); // Случайная позиция X от -5000 до 5000
+                //agent.init.y = Math.floor(Math.random() * 7000 - 3000); // Случайная позиция Y от -5000 до 5000
+                //agent.init.angle = Math.floor(Math.random() * 360);      // Случайный угол движения от 0 до 360 градусов
+                //agent.init.v = Math.floor(Math.random() * 11);    // Скорость от 1 до 6 м/с   
+        
+                //agent.store = JSON.parse(JSON.stringify(agent.init));
+                //this.agents.push(agent);
                 agent.store = JSON.parse(JSON.stringify(agent.init));
                 this.agents.push(agent);
             }
@@ -70,9 +85,10 @@ const rti = {
         
         let config = fs.readFileSync(folder + "config.json", {encoding:"utf-8"});
         this.config = JSON.parse(config);
-        utils.seed(this.config.seed);
-    },
-    next: function () {
+        this.utils.seed(this.config.seed);
+    }
+    next() {
+        //console.log(this.collisionCount);
         let timetemp = 0;
         this.time++;
         for (let i = 0; i < this.agents.length; i++) {
@@ -94,6 +110,8 @@ const rti = {
                     agent.store.indexObs = j;
                     console.log("----SOS----SOS----SOS----SOS----");
                 }else if(agent.store.angleFlag == 8) agent.store.indexObs = j;
+                //if (agent.observed[j].distance < 100) this.collisionCount++;
+                //if (agent.observed[j].distance < 30) this.boom++;
             }
             for(let j =0; j < agent.enviroment.length; j++){
                 if (agent.enviroment[j].Maneuver){
@@ -104,34 +122,36 @@ const rti = {
             agent.store.angle *= 1
             agent.store.angleTemp *= 1 //для временного изменения
             agent.store.v *= 1
-            agent.update(active, agent.store, agent.observed, utils, decision, maneuvering, this.Bearingtemp, this.Distancetemp,this.Vtemp_x, this.Vtemp_y);
-            agent.store.x = utils.round1(agent.store.x);
-            agent.store.y = utils.round1(agent.store.y);
-            agent.store.angle = utils.round5(agent.store.angle);
-            agent.store.angleTemp = utils.round5(agent.store.angleTemp);
-            agent.store.v = utils.round5(agent.store.v);
+            agent.update(this.active, agent.store, agent.observed, this.maneuvering, this.Bearingtemp, this.Distancetemp,this.Vtemp_x, this.Vtemp_y);
+            agent.store.x = this.utils.round1(agent.store.x);
+            agent.store.y = this.utils.round1(agent.store.y);
+            agent.store.angle = this.utils.round5(agent.store.angle);
+            agent.store.angleTemp = this.utils.round5(agent.store.angleTemp);
+            agent.store.v = this.utils.round5(agent.store.v);
         }
-    },
-    calcObservations: function (agent, list, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y, zones) {
+        //if (this.time == 1500 && this.flag == 0) {experimentsController.saveExperimentResults(1, this); this.flag=1;}
+    }
+    calcObservations(agent, list, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y, zones) {
         agent.observed = [];
         agent.real = [];
         agent.enviroment = [];
         if (agent.store.time % agent.init.invFreq == 0) {
+        //if (agent.time % agent.invFreq == 0) {
             for(let j = 0; j < zones.length; j++){
-                let real = utils.distanceToPolygonANDangle(agent.store, zones[j].store.points);
+                let real = this.utils.distanceToPolygonANDangle(agent.store, zones[j].store.points);
                 real.name = zones[j].store.name;
                 agent.real.push(real);
                 let env = JSON.parse(JSON.stringify(real));
-                const dr = utils.randomNormal(this.config.distance.mean, this.config.distance.std) * 1;
-                const ar = utils.randomNormal(this.config.peleng.mean, this.config.peleng.std) * 1;  
-                env.distance = utils.round1(env.distance + dr);
-                env.angle = utils.round5(env.angle + ar);
+                const dr = this.utils.randomNormal(this.config.distance.mean, this.config.distance.std) * 1;
+                const ar = this.utils.randomNormal(this.config.peleng.mean, this.config.peleng.std) * 1;  
+                env.distance = this.utils.round1(env.distance + dr);
+                env.angle = this.utils.round5(env.angle + ar);
                 agent.enviroment.push(env);
-                let flag_env = maneuvering.controle_check_line(env, agent.store.name, zones[j].store.description);
+                let flag_env = this.maneuvering.controle_check_line(env, agent.store.name, zones[j].store.description);
                 if (!flag_env){
-                    if(decision.purpose2(agent.store, env)){
+                    if(this.decision.purpose2(agent.store, env)){
                         env.Maneuver = true;
-                        let newCourses = maneuvering.CourseNew(agent.store, env);
+                        let newCourses = this.maneuvering.CourseNew(agent.store, env);
                         if(agent.store.active != "envM" && agent.store.angleFlag !=7) {
                         // Выбор оптимального курса (ближайшего к исходному направлению)
                             let selectedCourse = newCourses.reduce((best, current) => {
@@ -154,14 +174,14 @@ const rti = {
 
             for (let i = 0; i < list.length; i++) {
                 if (agent.store.name != list[i].store.name) {
-                    let real = utils.observation(agent.store, list[i].store);
+                    let real = this.utils.observation(agent.store, list[i].store);
                     real.name = list[i].store.name;
                     agent.real.push(real);
                     let obs = JSON.parse(JSON.stringify(real));
-                    const dr = utils.randomNormal(this.config.distance.mean, this.config.distance.std) * 1;
-                    const ar = utils.randomNormal(this.config.peleng.mean, this.config.peleng.std) * 1;
-                    obs.distance = utils.round1(obs.distance + dr);
-                    obs.angle = utils.round5(obs.angle + ar);
+                    const dr = this.utils.randomNormal(this.config.distance.mean, this.config.distance.std) * 1;
+                    const ar = this.utils.randomNormal(this.config.peleng.mean, this.config.peleng.std) * 1;
+                    obs.distance = this.utils.round1(obs.distance + dr);
+                    obs.angle = this.utils.round5(obs.angle + ar);
                     agent.observed.push(obs);
                     let flagXY = 0
                     //Заполнение массивов для пеленгов и дистанций (прошлое значение и текущее)
@@ -210,15 +230,16 @@ const rti = {
                         }
                     }
 
-                    let flag_obs = maneuvering.controle_check(obs, agent.store.name);    //Проверка на не пересечение зоны безопасного плавания
-                    if (decision.check_reason(agent.store, obs, list[i].store)){
+
+                    let flag_obs = this.maneuvering.controle_check(obs, agent.store.name);    //Проверка на не пересечение зоны безопасного плавания
+                    if (this.decision.check_reason(agent.store, obs, list[i].store)){
                         agent.store.angleFlag = 9;
                     }
                     let relativecourse;
                     if (agent.store.active == "stop" && flag_obs && list[i].store.active == "null")
                         agent.store.active = "null";
                     if (!flag_obs){
-                        relativecourse = maneuvering.relativeCourse(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
+                        relativecourse = this.maneuvering.relativeCourse(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
                         obs.relativeCourse = relativecourse[0];
                         //console.log(obs.relativeCourse);
                         if(Bearingtemp[agent.store.name][relativecourse[1]][1][0] == relativecourse[0]){//встречный и единый курс
@@ -241,56 +262,63 @@ const rti = {
                                     } else {
                                         obs.course = (agent.store.angle + 180) % 360;
                                     }
+                                }else if(obs.v == 0){
+                                    obs.course = list[i].store.angle;
                                 }
                             }
 
                             
                             if (agent.store.angle == obs.course){
-                                obs.relativeVelocity = maneuvering.relativeVelocity(1, agent.store, obs);
+                                obs.relativeVelocity = this.maneuvering.relativeVelocity(1, agent.store, obs);
                             }else{
-                                obs.relativeVelocity = maneuvering.relativeVelocity(0, agent.store, obs);
+                                obs.relativeVelocity = this.maneuvering.relativeVelocity(0, agent.store, obs);
                             }
                             
                             //console.log(obs.relativeVelocity);
                             obs.relativePath = obs.distance;
                             obs.Maneuver = false; //флаг для определения совершения маневра
 
-                            let purpose = decision.purpose(agent.store, obs, list[i].store);
+                            
+                            
+                            let purpose = this.decision.purpose(agent.store, obs, list[i].store);
                             if(purpose == 1 )  {
                                 obs.Maneuver = true;
-                                //console.log(maneuvering.criticalAngle(agent.store, obs)); 
-                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
+                                //console.log(this.maneuvering.criticalAngle(agent.store, obs)); 
+                                agent.store.criticalAngle = this.maneuvering.criticalAngle(agent.store, obs);//критический угол
                                 agent.store.angleFlag = 1;
-                            }else if (purpose == 0 && agent.store.v > obs.v){
+                            }else if (purpose == 0 && agent.store.v > obs.v){ //обгон
                                 obs.Maneuver = true;
                                 agent.store.active = "overtake";
-                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);//критический угол
+                                agent.store.criticalAngle = this.maneuvering.criticalAngle(agent.store, obs);//критический угол
                                 agent.store.angleFlag = 4;
-                            }else if(purpose == 3){
+                            }else if(purpose == 3){ //двойное расхождение
                                 obs.Maneuver = true;
                                 if (agent.store.v < obs.v){
-                                    agent.store.criticalAngle = 90 + (360 - obs.trueBearing) + maneuvering.criticalAngle(agent.store, obs);
+                                    agent.store.criticalAngle = 90 + (360 - obs.trueBearing) + this.maneuvering.criticalAngle(agent.store, obs);
                                 }else{
-                                    agent.store.criticalAngle = 20;
+                                    agent.store.criticalAngle = this.maneuvering.criticalAngle(agent.store, obs);;
                                     agent.store.angleFlag = 1;
                                 }
+                            }else if(purpose == 4){ //уклон от припятствия
+                                obs.Maneuver = true;
+                                agent.store.criticalAngle = this.maneuvering.courseAngleNew(agent.store, obs);
+                                agent.store.angleFlag = 10;
                             }
                         }else{
-                            //вычисление относительного пути и относительной скорости для пересечения курсов
-                            obs.relativeVelocity = maneuvering.relativeVelocity(2, agent.store, obs);
-                            obs.relativePath = maneuvering.relativePath(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
-                            //console.log(obs.relativePath);
-                            //console.log(obs.relativeVelocity);
-                            let purpose1 = decision.purpose1(agent.store, obs, list[i].store);
+                            //вычисление относительного пути и курса объекта маневра для пересечения курсов
+                            obs.relativePath = this.maneuvering.relativePath(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
+                            let course1 = this.maneuvering.course(agent.store, list[i].store, obs, Bearingtemp[agent.store.name], Distancetemp[agent.store.name]);
+                            obs.course = course1;
+                            let purpose1 = this.decision.purpose1(agent.store, obs, list[i].store);
                             if (purpose1 == 1){
                                 obs.Maneuver = true;
-                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);
+                                agent.store.criticalAngle = this.maneuvering.criticalAngle(agent.store, obs);
                                 agent.store.angleFlag = 5;
                                 agent.store.active = "stop";
                                 list[i].store.active = "stop";
                             }else if (purpose1 == 2){
                                 obs.Maneuver = true;
-                                agent.store.criticalAngle = maneuvering.criticalAngle(agent.store, obs);
+                                agent.store.criticalAngle = this.maneuvering.criticalAngle(agent.store, obs);
                                 agent.store.angleFlag = 5;
                                 agent.store.active = "stop";
                                 list[i].store.active = "stop";
@@ -298,6 +326,7 @@ const rti = {
                                 agent.store.angleFlag = 8;
                                 agent.store.the_reason_for_the_decrease = list[i].store.name;
                             }
+                            //console.log(agent.store.criticalAngle);
                         } 
                         //console.log(obs.relativePath/obs.relativeVelocity);
                     }
