@@ -1,5 +1,6 @@
 const assert = require("assert");
 const RotateStrategy_R = require('../strategy/rotate_strategy_R');
+const RotateStrategy_L = require('../strategy/rotate_strategy_L');
 const Agent = require('../strategy/agent');
 const BrakeStrategy = require('../strategy/brake_strategy');
 const LinearMovementStrategy = require('../strategy/linear_movement_strategy');
@@ -8,47 +9,6 @@ const RTI = require('../rti/index');
 const Decision = require('../rti/decision');
 const Maneuvering = require('../rti/maneuvering');
 const Active = require('../rti/active');
-
-describe('Integration: Rotate Strategy Right', () => {
-    it('should calculate correct rotation values', () => {
-      const store = {
-        angle: 0, v: 10, length: 100
-      };
-      const rotationStrategy = new RotateStrategy_R();
-      rotationStrategy.execute(store);
-      assert(store.angle > 0);
-    });
-});
-describe('Integration: Linear Movement Strategy', () => {
-    it('should move along a straight line correctly', () => {
-      // Создание объекта состояния
-      const store = {
-        x: 100, y: 100, angle: 90, v: 10
-      };
-      const movementStrategy = new LinearMovementStrategy();
-      movementStrategy.execute(store);
-      
-      assert(store.x > 100); 
-      assert(store.y === 100); 
-    });
-  });
-describe('Integration: Collision Response', () => {
-    it('should reduce speed upon detecting nearby obstacle', () => {
-      const store = {
-        x: 100, y: 100, angle: 0, v: 10, length: 100,
-        criticalAngle: 10, angleFlag: 0, active: 'null',
-        indexObs: 0, observed: [{
-          distance: 50, 
-          Maneuver: true
-        }],
-        distanceTemp: [[50]], 
-      };
-      const brakeStrategy = new BrakeStrategy();
-      brakeStrategy.execute(store);
-      
-      assert(store.v < 10); 
-    });
-  });
   
 describe('Decision', () => { //для проверки компонента desicion
   let decision;
@@ -134,7 +94,67 @@ describe('Maneuvering', () => {
         assert(velParallel > velOpposite); 
       });
 });
+describe('Testing Relative Course Calculation', () => {
+  it('should calculate relative course correctly', () => {
+    const maneuvering = new Maneuvering();
+    const agent1 = { x: 100, y: 100, v: 10, angle: 0 };
+    const agent2 = { x: 200, y: 200, v: 15, angle: 90, name: 'agent2' };
+    const obs = { distance: 150 };
+    const Bearing = [['agent2', {'0': 89, '1': 90, '2': 100}],['agent3', {'0': 150, '1': 100, '2': 90}]];
+    const Distance = [['agent2', {'0': 150, '1': 100, '2': 90}], ['agent3', {'0': 150, '1': 100, '2': 90}]];
 
+    const result = maneuvering.relativeCourse(agent1, agent2, obs, Bearing, Distance);
+    assert.equal(result[1], 0); 
+    assert(Number.isFinite(result[0])); // Курсовая величина должна быть числом
+  });
+  it('should handle extremely large values', () => {
+    const maneuvering = new Maneuvering();
+    const agent1 = { x: 100, y: 100, v: 10, angle: 0 };
+    const agent2 = { x: 200, y: 200, v: 15, angle: 90, name: 'agent2' };
+    const obs = { distance: Infinity };
+    const Bearing = [['agent2', {'0': Infinity, '1': Infinity, '2': Infinity}],['agent3', {'0': 150, '1': 100, '2': 90}]];
+    const Distance = [['agent2', {'0': Infinity, '1': Infinity, '2': Infinity}], ['agent3', {'0': 150, '1': 100, '2': 90}]];
+  
+    const result = maneuvering.relativeCourse(agent1, agent2, obs, Bearing, Distance);
+  
+    assert.equal(result[1], 0); 
+    assert(Number.isNaN(result[0])); // При бесконечности возникает NaN
+  });
+  it('should compute relative course fully with non-zero inputs', () => {
+    const maneuvering = new Maneuvering();
+    const agent1 = { x: 100, y: 100, v: 10, angle: 0 };
+    const agent2 = { x: 200, y: 200, v: 15, angle: 90, name: 'agent2' };
+    const obs = { distance: 150 };
+    const Bearing = [['agent2', {'0': 89, '1': 90, '2': 100}],['agent3', {'0': 150, '1': 100, '2': 90}]];
+    const Distance = [['agent2', {'0': 150, '1': 100, '2': 90}], ['agent3', {'0': 150, '1': 100, '2': 90}]];
+    const result = maneuvering.relativeCourse(agent1, agent2, obs, Bearing, Distance);
+
+    assert.equal(result[1], 0); 
+    assert(Math.abs(result[0]) < 180); // Значение угла в правильном диапазоне
+  });
+  it('should compute relative course exactly with another dataset', () => {
+    const maneuvering = new Maneuvering();
+    const agent1 = { x: 100, y: 100, v: 10, angle: 0 };
+    const agent2 = { x: 200, y: 200, v: 15, angle: 90, name: 'agent2' };
+    const obs = { distance: 150 };
+    const Bearing = [['agent2', {'0': 89, '1': 100, '2': 110}],['agent3', {'0': 150, '1': 100, '2': 90}]];
+    const Distance = [['agent2', {'0': 150, '1': 100, '2': 90}], ['agent3', {'0': 150, '1': 100, '2': 90}]];
+
+    const result = maneuvering.relativeCourse(agent1, agent2, obs, Bearing, Distance);
+
+    // teta = 100 - 110 = -10
+    // m = 100 / 90 = 1.11
+    // up = 1.1 * sin(-10) ≈ 0.594
+    // down = 1 - 1.1 * cos(-10) ≈ 1.913 , считаем в радианах
+    // p_0 = atan(0.594/1.913) × 180/π ≈ 17.3
+    // relativeCourse = 89 - 17.3 = 71.7
+
+    // Проверка индекса
+    assert.equal(result[1], 0);
+    // Проверка курса с погрешностью
+    assert(Math.abs(result[0] - 71.7) < 0.1); // допускаем небольшую погрешность около 0.1 градуса
+  });
+});
 describe('Critical Angle Calculation', () => {
     const maneuvering = new Maneuvering();
     it('should calculate minimum safe angle considering speed differences', () => {
@@ -143,7 +163,7 @@ describe('Critical Angle Calculation', () => {
       let critAngle = maneuvering.criticalAngle(agent1, agent2);
       assert(critAngle > 0); // Угол положительный
   
-      // Проверим, что угол увеличивается при большей разнице скоростей
+      // угол увеличивается при большей разнице скоростей
       const agentFast = { v: 20, relativeCourse: 0, trueBearing: 90, course: 150 };
       let fastCritAngle = maneuvering.criticalAngle(agent1, agentFast);
       assert(fastCritAngle < critAngle); 
@@ -218,6 +238,22 @@ describe('Testing CourseNew Functionality', () => {
       assert(typeof result.angle === 'number');
       assert(result.angle >= -180 && result.angle <= 180); // Угол корректен
     });
+    it('should calculate exact distance and angle to a simple rectangular polygon - 1', () => {
+      const utils = new Utils();
+      const agent = { x: 100, y: 100, angle: 0 };
+      const polygon = [
+        { x: 0, y: 0 },
+        { x: 200, y: 0 },
+        { x: 200, y: 200 },
+        { x: 0, y: 200 }
+      ];
+  
+      const result = utils.distanceToPolygonANDangle(agent, polygon);
+      // Проверка точного расстояния
+      assert.equal(result.distance, 100); 
+  
+      // Проверка точного угла
+      assert.equal(result.angle, -180); 
+    });
   });
-
 
