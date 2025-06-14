@@ -1,6 +1,12 @@
-let rti = require('../rti');
+let rti = new (require('../rti'));
 let express = require('express');
 let router = express.Router();
+
+const experimentsController = require('../rti/experiments_controller');
+// Количество экспериментов и число агентов
+const NUM_EXPERIMENTS = 2;
+const NUM_AGENTS = 10;
+const SAFE_DISTANCE_THRESHOLD = 100; // в метрах
 
 router.get('/', function(req, res, next) {
     try {
@@ -31,5 +37,7 @@ router.get('/config', function(req, res, next) {
         throw e;
     }
 });
+
+
 
 module.exports = router;

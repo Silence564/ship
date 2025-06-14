@@ -9,7 +9,7 @@ module.exports = {
         "color": "yellow",
         "frequency": 1
     },
-    "update": function (active, store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {
+    "update": function (active, store, observed,  maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y) {
         // [dx, dy] = utils.linearIncrement(store.angle, store.v); // Пересчитали в приращение
         // store.x += dx; // Применили приращение
         // store.y += dy;
@@ -19,6 +19,6 @@ module.exports = {
         //store.y += dy;
         // Содержание observed (наблюдаемых объектов) не учитывается
         //debug(JSON.stringify(observed)); // Вывод observed в консоль сервера в режиме отладки
-        active.main(store, observed, utils, decision, maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y)   
+        active.main(store, observed,  maneuvering, Bearingtemp, Distancetemp, Vtemp_x, Vtemp_y)   
     }
 }

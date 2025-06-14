@@ -9,7 +9,7 @@
   },
   "run": {
     "delay": "20",
-    "amount": "200"
+    "amount": "2000"
   },
   "screen": {
     "scale": "10"
